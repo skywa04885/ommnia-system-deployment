@@ -79,6 +79,8 @@ services:
       MAILGUN_BASE_URL_FILE: /run/secrets/mailgun-base-url
       MAILGUN_API_KEY_FILE: /run/secrets/mailgun-api-key
       MAILGUN_DOMAIN_FILE: /run/secrets/mailgun-domain
+    env_file:
+      - .env.api
     secrets:
       - postgres-user
       - postgres-password

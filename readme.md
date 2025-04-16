@@ -203,7 +203,7 @@ Om het instellen af te ronden, moet een environment bestand aangemaakt worden da
 Het email adres waarover notificaties van de alarm manager verstuurd worden moet worden opgegeven. Doe dit met de onderstaande opdracht. Vervang `<EMAIL>` met het daadwerkelijke email adres.
 
 ```bash
-echo "ALARM_MANAGER_NOTIFICATIONS_EMAIL=<EMAIL>" >> .env
+echo "ALARM_MANAGER_NOTIFICATIONS_EMAIL=<EMAIL>" >> .env.api
 ```
 
 ### 2. Opgeven van authenticatie notificatie email.
@@ -211,7 +211,7 @@ echo "ALARM_MANAGER_NOTIFICATIONS_EMAIL=<EMAIL>" >> .env
 Het email adres waarover notificaties van de authenticatie verstuurd worden moet worden opgegeven. Doe dit met de onderstaande opdracht. Vervang `<EMAIL>` met het daadwerkelijke email adres.
 
 ```bash
-echo "AUTH_NOTIFICATIONS_EMAIL=<EMAIL>" >> .env
+echo "AUTH_NOTIFICATIONS_EMAIL=<EMAIL>" >> .env.api
 ```
 
 ## Online zetten
