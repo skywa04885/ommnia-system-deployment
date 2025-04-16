@@ -57,7 +57,7 @@ sudo ufw allow from <REVERSE_PROXY_IP> proto tcp to any port 80
 In dezelfde map als het `compose.yml` bestand moet een bestand aangemaakt worden, namelijk `.env.redis-password`. Dit bestand moet het wachtwoord voor redis bevatten. Genereer dit bestand met de onderstaande opdracht.
 
 ```bash
-pwgen 60 0 > .env.redis-password
+pwgen 60 1 > .env.redis-password
 ```
 
 ## Instellen van PostgreSQL
@@ -79,7 +79,7 @@ echo "<GEBRUIKERSNAAM>" > .env.postgres-user
 Er moet een wachtwoord voor de gebruiker aangemaakt worden en geplaatst worden in het `.env.postgres-password` bestand. Gebruik de onderstaande opdracht om automatisch een veilig wachtwoord te genereren en te plaatsen in het juiste bestand.
 
 ```bash
-pwgen 60 0 > .env.postgres-password
+pwgen 60 1 > .env.postgres-password
 ```
 
 ## Instellen van InfluxDB2
@@ -101,7 +101,7 @@ echo "<GEBRUIKERSNAAM>" > .env.influxdb2-admin-username
 Er moet een wachtwoord voor de admin gebruiker aangemaakt worden en geplaatst worden in het `.env.influxdb2-admin-password` bestand. Gebruik de onderstaande opdracht om automatisch een veilig wachtwoord te genereren en te plaatsen in het juiste bestand.
 
 ```bash
-pwgen 60 0 > .env.influxdb2-admin-password
+pwgen 60 1 > .env.influxdb2-admin-password
 ```
 
 #### 3. Admin token
@@ -109,7 +109,7 @@ pwgen 60 0 > .env.influxdb2-admin-password
 Tot slot moet er een admin token aangemaakt worden. Deze moet worden geplaatst in het `.env.influxdb2-admin-token` bestand. Gebruik de onderstaande opdracht om automatisch een veilige token te genereren en te plaatsen in het juiste bestand.
 
 ```bash
-pwgen 120 0 > .env.influxdb2-admin-token
+pwgen 120 1 > .env.influxdb2-admin-token
 ```
 
 ## Instellen van S3

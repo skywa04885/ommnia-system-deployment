@@ -91,6 +91,7 @@ services:
       - mailgun-base-url
       - mailgun-api-key
       - mailgun-domain
+      - redis-password
     networks:
       - backend
       - frontend
