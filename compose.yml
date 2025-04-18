@@ -54,11 +54,11 @@ services:
       - spa
       - api
   spa:
-    image: ghcr.io/skywa04885/ommnia-system-spa:development
+    image: ghcr.io/skywa04885/ommnia-system-spa:${VERSION}
     networks:
       - frontend
   api:
-    image: ghcr.io/skywa04885/ommnia-system-api:development
+    image: ghcr.io/skywa04885/ommnia-system-api:${VERSION}
     environment:
       DB_USER_FILE: /run/secrets/postgres-user
       DB_PASS_FILE: /run/secrets/postgres-password

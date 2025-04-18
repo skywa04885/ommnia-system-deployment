@@ -52,6 +52,21 @@ Om verbindingen toe te laten op poort 80 moet de volgende opdracht uitgevoerd wo
 sudo ufw allow from <REVERSE_PROXY_IP> proto tcp to any port 80
 ```
 
+## Opgeven van versie
+
+
+### Ontwikkeling
+
+```bash
+echo "VERSION=development" > .env
+```
+
+### Productie
+
+```bash
+echo "VERSION=release" >> .env
+```
+
 ## Instellen van Redis.
 
 In dezelfde map als het `compose.yml` bestand moet een bestand aangemaakt worden, namelijk `.env.redis-password`. Dit bestand moet het wachtwoord voor redis bevatten. Genereer dit bestand met de onderstaande opdracht.
