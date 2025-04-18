@@ -58,10 +58,10 @@ services:
     networks:
       - frontend
   api:
-    build: ./config/api
+    image: ghcr.io/skywa04885/ommnia-system-api:development
     environment:
-      POSTGRES_USER_FILE: /run/secrets/postgres-user
-      POSTGRES_PASSWORD_FILE: /run/secrets/postgres-password
+      DB_USER_FILE: /run/secrets/postgres-user
+      DB_PASS_FILE: /run/secrets/postgres-password
       DB_URL: jdbc:postgresql://postgres:5432/ommnia_system
       REDIS_HOST: redis
       REDIS_PORT: 6379
