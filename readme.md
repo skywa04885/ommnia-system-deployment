@@ -2,6 +2,32 @@
 
 Deze repository bevat de deployment van het Ommnia System. Deze is opzichzelf incompleet, en zorgt enkel voor een draaiende versie. Alle andere dingen zoals SSL-Termination zullen op een reverse proxy plaatst moeten vinden. Deze deployment stelt enkel de applicatie beschikbaar.
 
+# Overzicht
+
+Hierdonder volgt een overzicht van wat deze deployment zal gaan bevatten.
+
+## Poorten
+
+Wanneer een deployment online is, zullen de volgende poorten door docker beschikbaar worden gesteld. 
+
+| Poort | Omschrijving           |
+| ----- | ---------------------- |
+| 6379  | Redis                  |
+| 5432  | PostgresQL             |
+| 8086  | InfluxDB               |
+| 80    | Applicatie (via NGINX) |
+
+Mijn persoonlijk advies is om enkel poort `80` open te zetten (dit wordt later ook in de firewall configuratie gedaan).
+Voor toegang tot de andere poorten is SSH-tunneling een veiligere optie. Zo'n tunnel kan met de volgende opdracht opgezet worden (voer deze opdracht uit *voordat* je een SSH-Shell het op de VPS). Vul de poort waarmee je wilt verbinden in voor de `<POORT>` placeholder, en het IP-Adres (of hostnaam) van de server in voor de placeholder `<SERVER>`.
+
+```bash
+ssh -L "<POORT>:<SERVER>:<POORT>" "<SERVER>"
+```
+
+# Installatie
+
+Om een nieuwe VPS op te zetten moet de onderstaande handleiding gevolgd worden. Deze zou een volledig werkende VPS op moeten kunnen zetten (op het instellen van de reverse-proxy na).
+
 ## Voorbereiden van server
 
 Deze handleiding is gemaakt voor Ubuntu Noble 24.04. Volg deze ook enkel op deze distributie. De kans is aanwezig dat deze handleiding anders niet werkt.
@@ -34,7 +60,17 @@ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin 
 
 ### Inloggen op docker container registry
 
-Volg de handleiding van [Github](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) om in te loggen op de container registry. Kijk specifiek naar *Authenticating with a personal access token (classic)*.
+Volg de handleiding van [Github](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry) om in te loggen op de container registry. Kijk specifiek naar _Authenticating with a personal access token (classic)_.
+
+### Rechten tot docker krijgen
+
+Tenzij je al in een root-account zit, moet de volgende opdracht uitgevoerd worden om rechten voor docker te verkrijgen.
+
+```bash
+sudo usermod -aG docker $USER
+```
+
+Log opnieuw in op de VPS om dit te laten reflecteren.
 
 ### Installeren van password generator
 
@@ -46,16 +82,91 @@ sudo apt-get install pwgen
 
 ### Instellen van firewall
 
+Ten eerste moet SSH toegang aangezet worden. Als deze stap wordt vergeten verlies je de toegang tot de nieuwe VPS.
+
+```bash
+sudo ufw allow ssh
+```
+
 Om verbindingen toe te laten op poort 80 moet de volgende opdracht uitgevoerd worden. Vervang `<REVERSE_PROXY_IP>` met het IP-adres van de reverse-proxy die de SSL-termination uit gaat voeren.
 
 ```bash
 sudo ufw allow from <REVERSE_PROXY_IP> proto tcp to any port 80
 ```
 
+Tot slot moet de firewall aangezet worden de onderstaande opdracht.
+
+```bash
+sudo ufw enable
+```
+
+Dan zal er een waarschuwing gegeven worden, maar ga gewoon door door `y` in te tikken en dan op enter te drukken.
+
+## Ophalen van deze repository
+
+### Aanmaken van SSH-Sleutel
+
+Als eerst moet de onderstaande opdracht uitgevoerd worden voor het aanmaken van een SSH-Sleutel. Deze zal twee bestanden aanmaken, namelijk `~/.ssh/id-github` e `~/.ssh/id-github.pub`. Deze moeten gebruikt worden voor het authenticeren op Github.
+
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/id-github -N ""
+```
+
+### Registreren van het publieke SSH-sleutel segment
+
+Voer de onderstaande opdracht uit om de publieke sleutel op te halen.
+
+```bash
+cat ~/.ssh/id-github.pub
+```
+
+Selecteer en kopieer het resultaat van de opdracht. Registreer deze onder de *SSH en GPG sleutels* sectie in de github instellingen.
+
+### Aanmaken van SSH-configuratie
+
+Voer als eerst de onderstaande opdracht uit, plaats je gebruikersnaam van github in de placeholder `<USERNAME>`.
+
+```bash
+export $GITHUB_USERNAME="<USERNAME>"
+```
+
+Voer daarna de volgende opdrachten uit, deze zullen de SSH configuratie opzetten. Deze pakt automatisch de net opgegeven gebruikersnaam en plaatst hem juist in het bestand.
+
+```bash
+echo "
+Host github.com
+  HostName github.com
+  User $GITHUB_USERNAME
+  IdentityFile ~/.ssh/id-github
+" >> ~/.ssh/config
+```
+
+### Inladen van repository
+
+Als alle voorgaande stappen goed zijn verlopen, kan de repository nu worden ingeladen. Doe dit met de volgende opdracht.
+
+```bash
+git clone git@github.com:skywa04885/ommnia-system-deployment.git
+```
+
+## Betreden van repository
+
+Momenteel ben sta je in de thuismap van je gebruiker. Om de repository te betreden moet de volgende opdracht uitgevoerd worden.
+
+```bash
+cd ommnia-system-deployment
+```
+
+Dit moet iedere keer als je iets omtrent deze repository wilt doen!
+
 ## Opgeven van versie
 
+Omdat deze repository zowel voor de `development` als `release` build gebruikt kan worden, moet er opgegeven worden welke versie van de applicatie er opgehaald moet worden van de github container repository.
+Zie de onderstaande opdrachten voor beide versies. Specifieke versies kunnen ook opgegeven worden, maar ik raad dit zelf persoonlijk af.
 
 ### Ontwikkeling
+
+Voer de volgende opdracht uit om een ontwikkelingsversie te draaien.
 
 ```bash
 echo "VERSION=development" > .env
@@ -63,9 +174,22 @@ echo "VERSION=development" > .env
 
 ### Productie
 
+Voer de volgende opdracht uit om een productieversie te draaien.
+
 ```bash
 echo "VERSION=release" >> .env
 ```
+
+### Wisselen van versie
+
+Om te wisselen van een versie moet je dit handmatig in het bestand aanpassen. De bovenstaande opdrachten zullen namelijk de `VERSION` regel toevoegen, zonder de bestaande aan te passen.
+Om de bestaande aan te passen kan je de volgende opdracht gebruiken.
+
+```bash
+nano .env
+```
+
+Maar dit zou voor de meeste ICT'ers vanzelfsprekend moeten zijn.
 
 ## Instellen van Redis.
 
@@ -131,9 +255,9 @@ pwgen 120 1 > .env.influxdb2-admin-token
 
 ### Opgeven van secrets
 
-Het Ommnia Systeem maakt gebruik van S3. Hiervoor moeten enkele stappen ondernomen worden om deze in te stellen voor het gebruik. 
+Het Ommnia Systeem maakt gebruik van S3. Hiervoor moeten enkele stappen ondernomen worden om deze in te stellen voor het gebruik.
 
-> Het is erg belangrijk dat iedere instantie van het ommnia system een *eigen* S3 bucket krijgt. Anders gaan er problemem ontstaan!
+> Het is erg belangrijk dat iedere instantie van het ommnia system een _eigen_ S3 bucket krijgt. Anders gaan er problemem ontstaan!
 
 #### 1. S3 Regio
 
@@ -234,7 +358,7 @@ echo "AUTH_NOTIFICATIONS_EMAIL=<EMAIL>" >> .env.api
 Voer de onderstaande opdracht uit om alles online te zetten.
 
 ```bash
-sudo docker compose up -d
+docker compose up -d
 ```
 
 ## Uitvoeren van database migrations
@@ -244,7 +368,7 @@ Om de database online te zetten moeten alle migrations uitgevoerd worden. Deze k
 Om deze migrations uit te voeren moet de volgende opdracht uitgevoerd worden. Dit opent een shell met de database.
 
 ```bash
-sudo docker compose exec -it postgres psql -U `cat .env.postgres-user` -d ommnia_system
+docker compose exec -it postgres psql -U `cat .env.postgres-user` -d ommnia_system
 ```
 
 Voer alle migraties sequentieel op basis van de datum. Als ze al eerder uitgevoerd zijn en een update uitgevoerd moet worden, voer dan enkel de nieuwe uit.
@@ -258,5 +382,5 @@ Herstart hierna het hele systeem.
 Om het hele systeem te herstarten voer de volgende opdracht uit.
 
 ```bash
-sudo docker compose restart
+docker compose restart
 ```

@@ -2,6 +2,9 @@ name: ommnia_system
 services:
   redis:
     build: ./config/redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
     environment:
       REDIS_PASSWORD_FILE: /run/secrets/redis-password
     secrets:
@@ -12,6 +15,9 @@ services:
       - ./config/redis/redis.conf.template:/usr/local/etc/redis/redis.conf.template:ro
   influxdb2:
     image: influxdb:2.7.11
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
     volumes:
       - influxdb2-data:/var/lib/influxdb2:rw
       - influxdb2-config:/etc/influxdb2:rw
@@ -31,6 +37,9 @@ services:
       - backend
   postgres:
     image: postgres:16.8
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data:rw
     secrets:
@@ -43,7 +52,8 @@ services:
     networks:
       - backend
   reverse-proxy:
-    image: nginx
+    image: nginx:1.27.5
+    restart: unless-stopped
     networks:
       - frontend
     ports:
@@ -55,10 +65,12 @@ services:
       - api
   spa:
     image: ghcr.io/skywa04885/ommnia-system-spa:${VERSION}
+    restart: unless-stopped
     networks:
       - frontend
   api:
     image: ghcr.io/skywa04885/ommnia-system-api:${VERSION}
+    restart: unless-stopped
     environment:
       DB_USER_FILE: /run/secrets/postgres-user
       DB_PASS_FILE: /run/secrets/postgres-password
