@@ -81,7 +81,7 @@ services:
       INFLUXDB2_BUCKET: ommnia
       INFLUXDB2_ORG: ommnia
       INFLUXDB2_URL: http://influxdb2:8086/
-      INFLUXDB2_TOKEN_FILE: /run/secrets/influxdb2-admin-token
+      INFLUXDB2_ADMIN_TOKEN_FILE: /run/secrets/influxdb2-admin-token
       S3_REGION_FILE: /run/secrets/s3-region
       S3_ACCESS_KEY_FILE: /run/secrets/s3-access-key
       S3_SECRET_KEY_FILE: /run/secrets/s3-secret-key
