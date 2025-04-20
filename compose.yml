@@ -21,7 +21,6 @@ services:
     volumes:
       - influxdb2-data:/var/lib/influxdb2:rw
       - influxdb2-config:/etc/influxdb2:rw
-      - ./config/influxdb2:/etc/influxdb2:rw
     secrets:
       - influxdb2-admin-username
       - influxdb2-admin-password
