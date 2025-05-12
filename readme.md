@@ -353,6 +353,22 @@ Het email adres waarover notificaties van de authenticatie verstuurd worden moet
 echo "AUTH_NOTIFICATIONS_EMAIL=<EMAIL>" >> .env.api
 ```
 
+### 3. Opgeven van rapportage email adres
+
+Het email adres waarmee de rapportages verstuurd worden moet worden opgegeven. Doe dit met de onderstaande opdracht. Vervang `<EMAIL>` met het daadwerkelijke email adres.
+
+```bash
+echo "REPORTING_EMAIL=<EMAIL>" >> .env.api
+```
+
+### 4. Opgeven van rapportage bucket
+
+De bucket waarin de rapportages opgeslagen worden. Deze moet los van de andere bucket, omdat deze gegevens zal bevatten die niet publiek toegankelijk mogen zijn. Geef deze naam op met met de onderstaande opdracht. Vervang `<BUCKET>` met de daadwerkelijke naam van de bucket.
+
+```bash
+echo "REPORTING_BUCKET=<BUCKET>" >> .env.api
+```
+
 ## Online zetten
 
 Voer de onderstaande opdracht uit om alles online te zetten.
@@ -360,22 +376,6 @@ Voer de onderstaande opdracht uit om alles online te zetten.
 ```bash
 docker compose up -d
 ```
-
-## Uitvoeren van database migrations
-
-Om de database online te zetten moeten alle migrations uitgevoerd worden. Deze kunnen gevonden worden in [Ommnia System DB](https://github.com/skywa04885/ommnia-system-db).
-
-Om deze migrations uit te voeren moet de volgende opdracht uitgevoerd worden. Dit opent een shell met de database.
-
-```bash
-docker compose exec -it postgres psql -U `cat .env.postgres-user` -d ommnia_system
-```
-
-Voer alle migraties sequentieel op basis van de datum. Als ze al eerder uitgevoerd zijn en een update uitgevoerd moet worden, voer dan enkel de nieuwe uit.
-
-Kopieer de inhoudt van de bestanden, plak ze in de shel, en druk op enter. Blijf dit doen totdat alle migraties zijn afgerond. Sluit daarna af met `exit`.
-
-Herstart hierna het hele systeem.
 
 ## Herstarten
 

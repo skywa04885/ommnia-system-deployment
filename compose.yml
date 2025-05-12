@@ -112,6 +112,10 @@ services:
       - redis
       - postgres
       - influxdb2
+  reports:
+    image: ghcr.io/ommnia-group/rapporting:release
+    networks:
+      - backend
 secrets:
   mailgun-base-url:
     file: .env.mailgun-base-url
